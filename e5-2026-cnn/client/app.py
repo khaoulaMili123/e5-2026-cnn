@@ -6,6 +6,9 @@ import requests
 # Configuration des URLs de l'API
 from config import API_UPLOAD_URL, API_PREDICTIONS_URL
 
+#Importe la fct de récupération vérifiée par les tests unitaires
+from api_client import recuperer_predictions
+
 # Titre de l'application
 st.title("🛰️ Application CNN - Classification d'Images Satellites")
 
@@ -15,9 +18,8 @@ menu = st.sidebar.radio("Navigation", ["📤 Upload d'image", "📋 Voir les pr�
 
 # Télécharger les prédictions indépendamment de la page affichée.
 try:
-    pourfichier = requests.post(API_PREDICTIONS_URL, timeout=(5, 30))
-    pourfichier.raise_for_status()
-    predictionsjson = pourfichier.json()
+    #Recuperer les predictions avec la fct testée
+    predictionsjson = recuperer_predictions(API_PREDICTIONS_URL)
     st.sidebar.download_button(
         label="Télécharger le JSON",
         data=json.dumps(predictionsjson, ensure_ascii=False, indent=2).encode("utf-8"),
