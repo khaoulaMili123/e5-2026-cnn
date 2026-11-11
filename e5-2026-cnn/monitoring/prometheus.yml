@@ -1,0 +1,14 @@
+# Prometheus recupere les mesures toutes les 15 secondes
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  #Identifie notre application dans prometheus
+  - job_name: "cnn-api"
+
+  # Route qui fournit les metriques 
+    metrics_path: /metrics
+
+    static_configs:
+      # Adresse de l'API dans le reseau Docker
+      - targets: ["web:80"]

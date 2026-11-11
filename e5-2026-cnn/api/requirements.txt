@@ -42,3 +42,6 @@ typing_extensions==4.12.2
 uvicorn==0.34.0
 watchfiles==1.0.4
 websockets==15.0
+
+# Fournit les outils pour exposer les métriques à Prometheus.
+prometheus-client==0.26.0

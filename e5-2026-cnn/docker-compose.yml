@@ -13,7 +13,7 @@ services:
       - ./databases:/var/lib/mysql
       - ./data/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -44,7 +44,7 @@ services:
     volumes:
       - ./api/app:/code/app
       - ./api/satelite_images:/code/satelite_images
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+    command: [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80" ]
     depends_on:
       db:
         condition: service_healthy
@@ -61,3 +61,34 @@ services:
     depends_on:
       - web
     restart: always
+
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      # Charge notre configuration en lecture seule.
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+      # Conserve l'historique des mesures.
+      - prometheus_data:/prometheus
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.2.3
+    ports:
+      # Grafana sera accessible sur localhost:3001.
+      - "127.0.0.1:3001:3000"
+    volumes:
+      # Conserve les dashboards et la configuration.
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+# Déclare les volumes persistants des outils de surveillance.
+volumes:
+  prometheus_data:
+  grafana_data:

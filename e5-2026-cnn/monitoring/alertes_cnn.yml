@@ -1,0 +1,59 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: cnn-monitoring
+      folder: CNN
+      interval: 30s
+      rules:
+        - uid: fg0yy9m7356o0e
+          title: CNN - Collecte API indisponible
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: fg0osy1dyvklcc
+              model:
+                editorMode: code
+                expr: up{job="cnn-api"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: Prometheus ne parvient plus à collecter /metrics depuis au moins une minute. Vérifier le conteneur API, ses logs et la connexion réseau.
+            summary: La collecte des métriques de l’API CNN échoue.
+          labels: {}
+          isPaused: false
